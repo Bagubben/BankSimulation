@@ -1,73 +1,84 @@
 package banksimulation;
 
+
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-public final class Customer
+public  class Customer
 {
     private final String name;
-    private final String accountList;
+    private final String lastName;
     private final long personalNumber;
    
     
-    ArrayList<SavingsAccount> storeSavingAccountList = new ArrayList<SavingsAccount>();
-    ArrayList<CreditAccount> storeCreditAccountList = new ArrayList<CreditAccount>();
-    ArrayList<Transaction> storeTransactionList = new ArrayList<Transaction>();
+    ArrayList<SavingsAccount> savingAccountList = new ArrayList<SavingsAccount>();
+    ArrayList<CreditAccount> creditAccountList = new ArrayList<CreditAccount>();
+    ArrayList<Transaction> transactionList = new ArrayList<Transaction>();
 
-    Customer(String name, String accountList, long personalNumber) throws FileNotFoundException
+    Customer(String name, String lastName, long personalNumber) throws FileNotFoundException
     {
         this.name = name;
-        this.accountList = accountList;
+        this.lastName = lastName;
         this.personalNumber = personalNumber;
         createAccountsList(personalNumber);
     }
-
     
-    
-     void createAccountsList(long ssn) throws FileNotFoundException
+     void createAccountsList(long personalNumber) throws FileNotFoundException
     {
-        PrintStream p = new PrintStream(new BufferedOutputStream(new FileOutputStream(ssn + "Savings.txt")));
-        p = new PrintStream(new BufferedOutputStream(new FileOutputStream(ssn + "Credit.txt")));
-        p = new PrintStream(new BufferedOutputStream(new FileOutputStream(ssn + "Transaction.txt")));
+        PrintStream p = new PrintStream(new BufferedOutputStream(new FileOutputStream(personalNumber + "Savings.txt")));
+        p = new PrintStream(new BufferedOutputStream(new FileOutputStream(personalNumber + "Credit.txt")));
+        p = new PrintStream(new BufferedOutputStream(new FileOutputStream(personalNumber + "Transaction.txt")));
         p.close();
     }
 
-    public void addStoreSavingAccountList()
+    public void addSavingAccountList() throws FileNotFoundException
     {
-        storeSavingAccountList.add(new SavingsAccount());
+        savingAccountList.add(new SavingsAccount(0, personalNumber, lastName));
     }
 
-    public void addStoreCreditAccountList()
+    public void addCreditAccountList() throws FileNotFoundException
     {
-        storeCreditAccountList.add(new CreditAccount());
+        creditAccountList.add(new CreditAccount(0, personalNumber, lastName));
     }
     
-    public void addStoreTransactionList()
+    public void addTransactionList( int accountNumber, String accountType, double oldSum, double transactionSum, double newSum, String transactionType) throws IOException
     {
-        storeTransactionList.add(new Transaction());
+        Transaction t = new Transaction(accountNumber, accountType, oldSum, transactionSum, newSum, transactionType);
+        transactionList.add(t);
+        printToTransactionFile(personalNumber, t);
+    }
+    
+     private void printToTransactionFile(long personalNumber ,Transaction t) throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(personalNumber + "Transaction.txt", true));
+        writer.write(t.getTransactionInfo() + "\n");
+        writer.close();
     }
 
-    public ArrayList<SavingsAccount> getStoreSavingAccountList()
+    public ArrayList<SavingsAccount> getSavingAccountList()
     {
-        return storeSavingAccountList;
+        return savingAccountList;
     }
 
-    public ArrayList<CreditAccount> getStoreCreditAccountList()
+    public ArrayList<CreditAccount> getCreditAccountList()
     {
-        return storeCreditAccountList;
+        return creditAccountList;
     }
 
-    public ArrayList<Transaction> getStoreTransactionList()
+    public ArrayList<Transaction> getTransactionList()
     {
-        return storeTransactionList;
+        return transactionList;
     }
     
     void print()
     {
-        System.out.println(this.accountList + "");
+        System.out.println(this.lastName + "");
     }
     
     public String getName()
@@ -75,14 +86,14 @@ public final class Customer
         return name;
     }
 
-    public String getAccountList()
+    public String getLastName()
     {
-        return accountList;
+        return lastName;
     }
     
-    public long getPersonalNUmber()
+    public long getPersonalNumber()
     {
         return personalNumber;
     }
-
+    
 }
